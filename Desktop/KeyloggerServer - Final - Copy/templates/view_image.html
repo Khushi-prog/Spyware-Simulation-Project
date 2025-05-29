@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View {{ filename }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #4CAF50;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Viewing {{ filename }}</h1>
+    <img src="data:image/jpeg;base64,{{ img_data }}" alt="{{ filename }}">
+    <br>
+    <a href="{{ url_for('index') }}">Back to Dashboard</a>
+</body>
+</html>

